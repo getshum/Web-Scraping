@@ -1,0 +1,41 @@
+#  written by getshum
+#! python3
+#  Movie list
+
+import os, bs4, requests
+from openpyxl import *
+
+#declare URL and download page
+currentYear = 2007
+url = "http://www.wildaboutmovies.com/"+str(currentYear)+"_movies/"
+#os.chdir('d:\\')
+#os.makedirs('movie', exist_ok=True)
+ml = []
+
+wb = Workbook()
+ws = wb.active
+
+while not currentYear==2018:
+    print("Downloading from page %s..." % url)
+    res = requests.get(url)
+    res.raise_for_status()
+    soup = bs4.BeautifulSoup(res.text)
+    elem = soup.select('img')
+    ml[:] = []
+
+    for i in elem:
+        ml.append(i.get('alt'))
+    
+    wb.create_sheet(title=(str(currentYear)))
+    ws = wb[str(currentYear)]
+    
+    for i in range(len(ml)):
+        ws.cell(row=(i+1),column=1).value = ml[i]
+	
+    currentYear += 1
+    url = "http://www.wildaboutmovies.com/"+str(currentYear)+"_movies/"
+    
+wb.save('d:\\movieList.xlsx')
+print("Downloads complete.")
+
+#  written by getshum
